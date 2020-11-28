@@ -93,36 +93,38 @@ def new_report(request):
         last_name = data["lastName"]
         phone_number = data["phoneNumber"]
         national_code = data["nationalCode"]
+        birth_date = data['birthData']
         symptoms = data['symptoms']
         try:
-            is_Available = models.Patient.objects.filter(nationalCode=national_code)
+            is_Available = models.Patient.objects.filter(national_code=national_code)
             if not is_Available:
-                current_patient = models.Patient.objects.create(user_site=current_user, firstName=first_name,
-                                                                lastName=last_name, phoneNumber=phone_number,
-                                                                nationalCode=national_code)
+                current_patient = models.Patient.objects.create(user_site=current_user, first_name=first_name,
+                                                                last_name=last_name, phone_number=phone_number,
+                                                                national_code=national_code, birth_date=birth_date)
                 sum = 0
                 for i in symptoms:
-                    current_symptom = models.Symptom.objects.get(title=i)
-                    current_patient.symptoms.add(current_symptom)
-                    sum = sum + int(current_symptom.weight)
-                if sum > 10:
-                    current_DiseaseStatus = models.DiseaseStatus.objects.get(title="قطعی کرونا", is_System=True)
-                    current_patient.diseases.add(current_DiseaseStatus)
-                    rsp = {'illness': "قطعی کرونا",
+                    if models.Symptom.objects.filter(symptom_title=i):
+                        current_symptom = models.Symptom.objects.get(symptom_title=i)
+                        models.PatientSymptom.objects.create(patient=current_patient, symptom=current_symptom)
+                        sum = sum + current_symptom.weight
+                ghatei = models.DiseaseStatus.objects.get(disease_status_title="قطعی کرونا", is_System=True)
+                mashkook = models.DiseaseStatus.objects.get(disease_status_title="مشکوک به کرونا", is_System=True)
+                anfoolanza = models.DiseaseStatus.objects.get(disease_status_title="آنفولانزا", is_System=True)
+                if sum > ghatei.probable:
+                    models.Status.objects.create(patient=current_patient, disease_status=ghatei)
+                    rsp = {'illness': ghatei.disease_status_title,
                            'patientid': current_patient.id,
                            'flag': True
                            }
-                elif sum > 5:
-                    current_DiseaseStatus = models.DiseaseStatus.objects.get(title="مشکوک به کرونا", is_System=True)
-                    current_patient.diseases.add(current_DiseaseStatus)
-                    rsp = {'illness': "مشکوک به کرونا",
+                elif sum > mashkook.probable:
+                    models.Status.objects.create(patient=current_patient, disease_status=mashkook)
+                    rsp = {'illness': mashkook.disease_status_title,
                            'patientid': current_patient.id,
                            'flag': True
                            }
                 else:
-                    current_DiseaseStatus = models.DiseaseStatus.objects.get(title="آنفولانزا", is_System= True)
-                    current_patient.diseases.add(current_DiseaseStatus)
-                    rsp = {'illness': "آنفولانزا",
+                    models.Status.objects.create(patient=current_patient, disease_status=anfoolanza)
+                    rsp = {'illness': anfoolanza.disease_status_title,
                            'patientid': current_patient.id,
                            'flag': True
                            }
@@ -130,44 +132,65 @@ def new_report(request):
                 return Response(rsp, status=status.HTTP_200_OK)
 
             else:
-                Current_patient = models.Patient.objects.get(nationalCode=national_code)
-                Current_patient.firstName = first_name
-                Current_patient.lastName = last_name
-                Current_patient.phoneNumber = phone_number
-                last_disease = Current_patient.diseases.last()
-                Current_patient.save()
-                rsp = {'illness': last_disease,
-                       'patientid': Current_patient.id,
-                       'flag': True}
-                return Response(rsp, status=status.HTTP_200_OK)
+                # Current_patient = models.Patient.objects.get(nationalCode=national_code)
+                # Current_patient.firstName = first_name
+                # Current_patient.lastName = last_name
+                # Current_patient.phoneNumber = phone_number
+                # last_disease = Current_patient.diseases.last()
+                # Current_patient.save()
+                rsp = {'flag': False}
+                return Response(rsp, status=status.HTTP_406_NOT_ACCEPTABLE)
         except Exception as e:
-            print(e)
             return Response({'Error': "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
     elif request.method == 'PUT':
         data = request.data
         patient_id = data["patientid"]
-        disease_status = data["DiseaseStatus"]
-        patient_status = data["PatientStatus"]
-        current_patient = models.Patient.objects.get(id=patient_id)
-        disease = models.DiseaseStatus.objects.get(title=disease_status , is_System= False)
-        current_patient.diseases.add(disease)
-        current_status = models.PatientStatus.objects.get(title=patient_status)
-        current_patient.statuses.add(current_status)
-        return Response({'Message': "Done"})
+        disease_status = data["diseaseStatus"]
+        patient_status = data["patientStatus"]
+        try:
+            if models.Patient.objects.filter(id=patient_id, user_site=request.user):
+                current_patient = models.Patient.objects.get(id=patient_id, user_site=request.user)
+                current_disease = models.DiseaseStatus.objects.get(disease_status_title=disease_status, is_System=False)
+                current_status = models.PatientStatus.objects.get(patient_status_title=patient_status)
+                models.Status.objects.create(patient=current_patient, disease_status=current_disease,
+                                             patient_status=current_status)
+                return Response({'flag': True})
+            else:
+                return Response({'flag': False})
+        except Exception as e:
+            return Response({'Error': "Error"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated])
 def get_all_user_reports(request):
-    a = models.Patient.objects.filter(user_site=request.user)
-    rsp = {}
-    s = 0
-    for i in a:
-        rsp.update({'val'+str(s): {'id': i.id, 'firstname': i.firstName, 'lastname': i.lastName, 'phonenumber': i.phoneNumber, 'nationalcode': i.nationalCode, 'lastdisease': i.diseases.last()}})
-        s = s+1
-    print(rsp)
-    return Response(a.values(), status=status.HTTP_200_OK)
+    try:
+        a = models.Patient.objects.filter(user_site=request.user)
+        rsp = {}
+        if a:
+            s = 0
+            for i in a:
+                b = models.Status.objects.filter(patient=i)
+                patient_status = 'null'
+                disease_title = 'null'
+                for j in b:
+                    if j.patient_status:
+                        patient_status = j.patient_status.symptom_title
+                    if not j.disease_status.is_System:
+                        disease_title = j.disease_status.symptom_title
+                rsp.update({'val' + str(s): {'id': i.id, 'firstname': i.first_name, 'lastname': i.last_name,
+                                             'phonenumber': i.phone_number, 'nationalcode': i.national_code,
+                                             'disease': disease_title, 'patientstatus': patient_status}})
+                s = s + 1
+            rsp.update({'flag': True})
+            return Response(rsp, status=status.HTTP_200_OK)
+        else:
+            rsp.update({'flag': False})
+            return Response(rsp, status=status.HTTP_406_NOT_ACCEPTABLE)
+    except Exception as e:
+        print(e)
+        return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
 @api_view(['POST'])
@@ -179,47 +202,70 @@ def edit_report(request):
     # lastName = data['lastName']
     # nationalCode = data['nationalCode']
     # phoneNumber = data['phoneNumber']
-    diseasestatus = data['diseasestatus']
-    patientstatus = data['patientstatus']
+    diseasestatus = data['diseaseStatus']
+    patientstatus = data['patientStatus']
     symptoms = data['symptoms']
-    current_patient = models.Patient.objects.get(id=patientid)
-    a = current_patient.diseases.values()
-    for i in a:
-        if i['is_System']== True:
-            current_disease_system = i
-
-    if symptoms:
-        models.Patient.objects.get(id=patientid).symptoms.clear()
-        sum = 0
-        for i in symptoms:
-            current_symptom = models.Symptom.objects.get(title=i)
-            sum = sum + int(current_symptom.weight)
-            current_patient.symptoms.add(current_symptom)
-        if sum > 10:
-            current_disease_system = models.DiseaseStatus.objects.get(title="قطعی کرونا", is_System=True)
-            current_patient.diseases.add(current_disease_system)
-        elif sum > 5:
-            current_disease_system = models.DiseaseStatus.objects.get(title="مشکوک به کرونا", is_System=True)
-            current_patient.diseases.add(current_disease_system)
-        else:
-            current_disease_system = models.DiseaseStatus.objects.get(title="آنفولانزا", is_System=True)
-            current_patient.diseases.add(current_disease_system)
-
-    # current_patient.firstName = firstName
-    # current_patient.lastName = lastName
-    # current_patient.nationalCode = nationalCode
-    # current_patient.phoneNumber = phoneNumber
-    current_disease_user = models.DiseaseStatus.objects.get(title=diseasestatus, is_System=False)
-    current_status = models.PatientStatus.objects.get(title=patientstatus)
-    current_patient.diseases.create()
-    current_patient.statuses.add(current_status)
-    current_patient.save()
-    rsp = {
-        'message': 'Done',
-        'disease': current_patient.diseases.last().title,
-        'patientstatus': current_patient.statuses.last().title,
-        'system_disease': current_disease_system.title
-    }
-    print(current_patient.diseases.values())
-    print(current_patient.diseases.last())
-    return Response(rsp, status=status.HTTP_200_OK)
+    try:
+        if models.Patient.objects.filter(id=patientid, user_site=request.user):
+            current_patient = models.Patient.objects.get(id=patientid, user_site=request.user)
+            a = models.Status.objects.filter(patient=current_patient)
+            for i in a:
+                if i.disease_status.is_System:
+                    current_disease_system = i.disease_status
+            if symptoms:
+                models.PatientSymptom.objects.filter(patient=current_patient).delete()
+                sum = 0
+                for i in symptoms:
+                    current_symptom = models.Symptom.objects.get(symptom_title=i)
+                    sum = sum + current_symptom.weight
+                    models.PatientSymptom.objects.create(patient=current_patient, symptom=current_symptom)
+                ghatei = models.DiseaseStatus.objects.get(disease_status_title="قطعی کرونا", is_System=True)
+                mashkook = models.DiseaseStatus.objects.get(disease_status_title="مشکوک به کرونا", is_System=True)
+                anfoolanza = models.DiseaseStatus.objects.get(disease_status_title="آنفولانزا", is_System=True)
+                if models.PatientStatus.objects.filter(patient_status_title=patientstatus):
+                    current_status = models.PatientStatus.objects.get(title=patientstatus)
+                    if sum > ghatei.probable:
+                        models.Status.objects.create(patient=current_patient, disease_status=ghatei, patient_status=current_status)
+                        current_disease_system = ghatei
+                    elif sum > mashkook.probable:
+                        models.Status.objects.create(patient=current_patient, disease_status=mashkook, patient_status=current_status)
+                        current_disease_system = mashkook
+                    else:
+                        models.Status.objects.create(patient=current_patient, disease_status=anfoolanza, patient_status=current_status)
+                        current_disease_system = anfoolanza
+                else:
+                    if sum > ghatei.probable:
+                        models.Status.objects.create(patient=current_patient, disease_status=ghatei)
+                        current_disease_system = ghatei
+                    elif sum > mashkook.probable:
+                        models.Status.objects.create(patient=current_patient, disease_status=mashkook)
+                        current_disease_system = mashkook
+                    else:
+                        models.Status.objects.create(patient=current_patient, disease_status=anfoolanza)
+                        current_disease_system = anfoolanza
+            # current_patient.first_name = firstName
+            # current_patient.last_name = lastName
+            # current_patient.national_code = nationalCode
+            # current_patient.phone_number = phoneNumber
+            if models.DiseaseStatus.objects.filter(disease_status_title=diseasestatus, is_System=False) \
+                    and models.PatientStatus.objects.filter(patient_status_title=patientstatus):
+                current_disease_user = models.DiseaseStatus.objects.get(disease_status_title=diseasestatus, is_System=False)
+                current_status = models.PatientStatus.objects.get(patient_status_title=patientstatus)
+                models.Status.objects.create(patient=current_patient, disease_status=current_disease_user, patient_status=current_status)
+            current_patient.save()
+            rsp = {
+                'user-disease': current_disease_user.disease_status_title,
+                'patientstatus': current_status.patient_status_title,
+                'system_disease': current_disease_system.disease_status_title,
+                'flaf': True
+            }
+            return Response(rsp, status=status.HTTP_200_OK)
+        rsp = {
+            'user-disease': 'null',
+            'patientstatus': 'null',
+            'system_disease': 'null',
+            'flaf': False
+        }
+        return Response(rsp, status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({'Error': 'Error'}, status=status.HTTP_200_OK)
