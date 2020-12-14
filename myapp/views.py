@@ -4,6 +4,7 @@ from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from rest_framework import status
+from django.core.mail import send_mail
 
 # use django authentication for User authentication, We can also use django rest SessionAuthentication.
 from django.contrib.auth import authenticate
@@ -93,7 +94,7 @@ def new_report(request):
         last_name = data["lastName"]
         phone_number = data["phoneNumber"]
         national_code = data["nationalCode"]
-        birth_date = data['birthData']
+        birth_date = data['birthDate']
         symptoms = data['symptoms']
         try:
             is_Available = models.Patient.objects.filter(national_code=national_code)
@@ -172,13 +173,13 @@ def get_all_user_reports(request):
             s = 0
             for i in a:
                 b = models.Status.objects.filter(patient=i)
-                patient_status = 'null'
-                disease_title = 'null'
+                patient_status = 'ثبت نشده'
+                disease_title = 'ثبت نشده'
                 for j in b:
                     if j.patient_status:
-                        patient_status = j.patient_status.symptom_title
+                        patient_status = j.patient_status.patient_status_title
                     if not j.disease_status.is_System:
-                        disease_title = j.disease_status.symptom_title
+                        disease_title = j.disease_status.disease_status_title
                 rsp.update({'val' + str(s): {'id': i.id, 'firstname': i.first_name, 'lastname': i.last_name,
                                              'phonenumber': i.phone_number, 'nationalcode': i.national_code,
                                              'disease': disease_title, 'patientstatus': patient_status}})
@@ -193,15 +194,25 @@ def get_all_user_reports(request):
         return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 
+def send_email(email, data):
+    send_mail('django test title',
+              'this email is sent by Corona_Project.\n You should take care of yourself in this situation.\nlast '
+              'disease: ' + data,
+              'sofwareengineering96@gmail.com',
+              [email],
+              fail_silently=False)
+
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
-def edit_report(request):
+def edit_report(request, pk):
     data = request.data
-    patientid = data['patientid']
-    # firstName = data['firstName']
-    # lastName = data['lastName']
-    # nationalCode = data['nationalCode']
-    # phoneNumber = data['phoneNumber']
+    patientid = pk
+    firstName = data['firstName']
+    lastName = data['lastName']
+    nationalCode = data['nationalCode']
+    phoneNumber = data['phoneNumber']
+    birthDate = data['birthDate']
     diseasestatus = data['diseaseStatus']
     patientstatus = data['patientStatus']
     symptoms = data['symptoms']
@@ -223,15 +234,21 @@ def edit_report(request):
                 mashkook = models.DiseaseStatus.objects.get(disease_status_title="مشکوک به کرونا", is_System=True)
                 anfoolanza = models.DiseaseStatus.objects.get(disease_status_title="آنفولانزا", is_System=True)
                 if models.PatientStatus.objects.filter(patient_status_title=patientstatus):
-                    current_status = models.PatientStatus.objects.get(title=patientstatus)
+                    current_status = models.PatientStatus.objects.get(patient_status_title=patientstatus)
+
                     if sum > ghatei.probable:
-                        models.Status.objects.create(patient=current_patient, disease_status=ghatei, patient_status=current_status)
+                        models.Status.objects.create(patient=current_patient, disease_status=ghatei,
+                                                     patient_status=current_status)
                         current_disease_system = ghatei
+                        for i in models.Connections.objects.filter(patient=current_patient):
+                            send_email(i.email, current_disease_system.disease_status_title)
                     elif sum > mashkook.probable:
-                        models.Status.objects.create(patient=current_patient, disease_status=mashkook, patient_status=current_status)
+                        models.Status.objects.create(patient=current_patient, disease_status=mashkook,
+                                                     patient_status=current_status)
                         current_disease_system = mashkook
                     else:
-                        models.Status.objects.create(patient=current_patient, disease_status=anfoolanza, patient_status=current_status)
+                        models.Status.objects.create(patient=current_patient, disease_status=anfoolanza,
+                                                     patient_status=current_status)
                         current_disease_system = anfoolanza
                 else:
                     if sum > ghatei.probable:
@@ -243,29 +260,134 @@ def edit_report(request):
                     else:
                         models.Status.objects.create(patient=current_patient, disease_status=anfoolanza)
                         current_disease_system = anfoolanza
-            # current_patient.first_name = firstName
-            # current_patient.last_name = lastName
-            # current_patient.national_code = nationalCode
-            # current_patient.phone_number = phoneNumber
+            current_patient.first_name = firstName
+            current_patient.last_name = lastName
+            current_patient.national_code = nationalCode
+            current_patient.phone_number = phoneNumber
+            current_patient.birth_date = birthDate
             if models.DiseaseStatus.objects.filter(disease_status_title=diseasestatus, is_System=False) \
                     and models.PatientStatus.objects.filter(patient_status_title=patientstatus):
-                current_disease_user = models.DiseaseStatus.objects.get(disease_status_title=diseasestatus, is_System=False)
+                current_disease_user = models.DiseaseStatus.objects.get(disease_status_title=diseasestatus,
+                                                                        is_System=False)
                 current_status = models.PatientStatus.objects.get(patient_status_title=patientstatus)
-                models.Status.objects.create(patient=current_patient, disease_status=current_disease_user, patient_status=current_status)
+                models.Status.objects.create(patient=current_patient, disease_status=current_disease_user,
+                                             patient_status=current_status)
             current_patient.save()
             rsp = {
-                'user-disease': current_disease_user.disease_status_title,
-                'patientstatus': current_status.patient_status_title,
+                'first_name': current_patient.first_name,
+                'last_name': current_patient.last_name,
+                'phone_number': current_patient.phone_number,
+                'national_code': current_patient.national_code,
+                'birth_date': current_patient.birth_date,
+                'user_disease': current_disease_user.disease_status_title,
+                'patient_status': current_status.patient_status_title,
                 'system_disease': current_disease_system.disease_status_title,
-                'flaf': True
+                'flag': True
             }
             return Response(rsp, status=status.HTTP_200_OK)
         rsp = {
-            'user-disease': 'null',
-            'patientstatus': 'null',
+            'user_disease': 'null',
+            'patient_status': 'null',
             'system_disease': 'null',
-            'flaf': False
+            'flag': False
         }
         return Response(rsp, status=status.HTTP_200_OK)
     except Exception as e:
         return Response({'Error': 'Error'}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def add_connection(request, pk):
+    data = request.data
+    patientid = pk
+    phonenumber = data['phoneNumber']
+    email = data['email']
+    try:
+        if models.Patient.objects.filter(id=patientid, user_site=request.user):
+            current_patient = models.Patient.objects.get(id=patientid, user_site=request.user)
+            models.Connections.objects.create(patient=current_patient, phone_number=phonenumber, email=email)
+            last_disease = ''
+            for i in models.Status.objects.filter(patient=current_patient):
+                last_disease = i.disease_status.disease_status_title
+            if last_disease == "مشکوک به کرونا":
+                send_email(email, last_disease)
+            elif last_disease == "قطعی کرونا":
+                send_email(email, last_disease)
+            return Response({'flag': True}, status=status.HTTP_200_OK)
+        else:
+            return Response({'flag': False}, status=status.HTTP_406_NOT_ACCEPTABLE)
+    except Exception as e:
+        print(e)
+        return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_patient_info(request, pk):
+    try:
+        if models.Patient.objects.filter(id=pk, user_site=request.user):
+            current_patient = models.Patient.objects.get(id=pk, user_site=request.user)
+            rsp = {
+                'firstname': current_patient.first_name,
+                'lastname': current_patient.last_name,
+                'phonenumber': current_patient.phone_number,
+                'nationalcode': current_patient.national_code,
+                'birthdate': current_patient.birth_date,
+                'flag': True
+            }
+            return Response(rsp, status=status.HTTP_200_OK)
+        else:
+            return Response({'flag': False}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_patient_connections(request, pk):
+    try:
+        if models.Patient.objects.filter(id=pk, user_site=request.user):
+            current_patient = models.Patient.objects.get(id=pk, user_site=request.user)
+            connections = models.Connections.objects.filter(patient=current_patient)
+            s = 0
+            rsp = {}
+            for i in connections:
+                rsp.update({'connection' + str(s): {'phoneNumber': i.phone_number,
+                                                    'email': i.email
+                                                    }
+                            })
+                s = s + 1
+            rsp.update({'flag': True})
+            return Response(rsp, status=status.HTTP_200_OK)
+        else:
+            return Response({'flag': False}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes(())
+def get_number_corona(request):
+    try:
+        allStatus = models.Status.objects.filter()
+        allPatients = models.Patient.objects.filter()
+        last = ''
+        statusperpatient = []
+        for i in allPatients:
+            for j in allStatus:
+                if j.patient == i:
+                    last = j.disease_status
+            statusperpatient.append(last)
+        ghateiCorona = models.DiseaseStatus.objects.get(disease_status_title="قطعی کرونا", is_System=False)
+        s = 0
+        for i in statusperpatient:
+            if i == ghateiCorona:
+                s = s + 1
+        return Response({'result': s}, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        print(e)
+        return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

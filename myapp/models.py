@@ -51,8 +51,8 @@ class DiseaseStatus(models.Model):
 
 class Connections(models.Model):
     patient = models.ForeignKey(Patient, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=15)
-    email = models.EmailField(max_length=30)
+    phone_number = models.CharField(max_length=15, null=True)
+    email = models.EmailField(max_length=30, null=True)
 
 
 class Status(models.Model):
