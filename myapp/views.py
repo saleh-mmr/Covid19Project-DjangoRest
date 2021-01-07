@@ -1,10 +1,14 @@
 from . import models
+from django.core.mail import send_mail
+import http.client
+import datetime as DT
+import ast
+
 from rest_framework.response import Response
 from rest_framework.decorators import permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from rest_framework import status
-from django.core.mail import send_mail
 
 # use django authentication for User authentication, We can also use django rest SessionAuthentication.
 from django.contrib.auth import authenticate
@@ -391,3 +395,46 @@ def get_number_corona(request):
     except Exception as e:
         print(e)
         return Response({'Error': 'Error'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+
+@api_view(['GET'])
+@permission_classes(())
+def get_corona_statistics(request):
+    try:
+        conn = http.client.HTTPSConnection("covid-193.p.rapidapi.com")
+
+        headers = {
+            'x-rapidapi-key': "4af2372f70msh1d66abbf15ab96bp13443cjsn3b0f85f58f9a",
+            'x-rapidapi-host': "covid-193.p.rapidapi.com"
+        }
+
+        today = DT.date.today()
+        a = []
+        rsp = {}
+
+        for i in range(1, 8):
+            date = today - DT.timedelta(days=i)
+            dayOfDate = date.day
+            day = dayOfDate
+            if dayOfDate < 10:
+                day = '0' + str(dayOfDate)
+            monthOfDate = date.month
+            month = monthOfDate
+            if monthOfDate < 10:
+                month = '0' + str(monthOfDate)
+            year = date.year
+            conn.request("GET", "/history?country=Iran&day=" + str(year) + "-" + str(month) + "-" + str(day),
+                         headers=headers)
+            res = conn.getresponse()
+            data = res.read()
+            my_string = data.decode("utf-8")
+            my_dict = ast.literal_eval(my_string)
+            date = my_dict.get('parameters').get('day')
+            new_case = my_dict.get('response')[0].get('cases').get('new')
+            recovered = my_dict.get('response')[0].get('cases').get('recovered')
+            deaths = my_dict.get('response')[0].get('deaths').get('new')
+            rsp.update({date: {'new_case': int(new_case), 'recovered': recovered, 'deaths': int(deaths)}})
+        return Response(rsp, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(e)
+        return Response({'flag': False}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

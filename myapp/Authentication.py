@@ -23,7 +23,6 @@ def token_expire_handler(token):
     """
     if token is expired new token will be established
     If token is expired then it will be removed and new one
-    If token is expired then it will be removed and new one
     with different key will be created
     """
     is_expired = is_token_expired(token)
