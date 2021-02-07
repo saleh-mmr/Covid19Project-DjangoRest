@@ -52,6 +52,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'myapp.logmw.SimpleMiddleware',
+    'myapp.midlog.RequestLogMiddleware'
 ]
 
 ROOT_URLCONF = 'Corona_Project.urls'
@@ -148,3 +150,27 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_PASSWORD = "sa_mmr@yahoo.com"
+
+# LOGGING = {
+#     'version': 1,
+#     'loggers': {
+#         'django': {
+#             'handlers': ['file'],
+#             'level': 'INFO'
+#         }
+#     },
+#     'handlers': {
+#         'file': {
+#             'level': 'INFO',
+#             'class': 'logging.FileHandler',
+#             'filename': './log/debug3.log',
+#             'formatter': 'simpleRe',
+#         }
+#     },
+#     'formatters': {
+#         'simpleRe': {
+#             'format': '{levelname} {message} {asctime}',
+#             'style': '{',
+#         }
+#     }
+# }

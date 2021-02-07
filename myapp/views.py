@@ -22,7 +22,8 @@ from django.contrib.auth import logout as django_logout
 from rest_framework.authtoken.models import Token
 
 from .Authentication import token_expire_handler
-
+import logging,traceback
+logger = logging.getLogger('django')
 
 @api_view(['POST'])
 @permission_classes(())
@@ -60,6 +61,7 @@ def login(request):
             }
             return Response(tmp_response, status=status.HTTP_200_OK)
         else:
+            logger.info(request.data)
             return Response({"message": "Wrong username or password"}, status=status.HTTP_401_UNAUTHORIZED)
     except Exception as e:
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)
