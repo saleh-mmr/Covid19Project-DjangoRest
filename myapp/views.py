@@ -1,29 +1,25 @@
-from . import models
-from django.core.mail import send_mail
-import http.client
-import datetime as DT
 import ast
-
-from rest_framework.response import Response
-from rest_framework.decorators import permission_classes
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import api_view
-from rest_framework import status
+import datetime as DT
+import http.client
+import logging
 
 # use django authentication for User authentication, We can also use django rest SessionAuthentication.
 from django.contrib.auth import authenticate
-from rest_framework.authentication import SessionAuthentication, BasicAuthentication
+from django.contrib.auth import logout as django_logout
+from django.core.mail import send_mail
+from rest_framework import status
+from rest_framework.authtoken.models import Token
+from rest_framework.decorators import api_view
+from rest_framework.decorators import permission_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+
+from . import models
+from .Authentication import token_expire_handler
 
 # use django user model
-from django.contrib.auth.models import User
-
-from django.contrib.auth import logout as django_logout
-
-from rest_framework.authtoken.models import Token
-
-from .Authentication import token_expire_handler
-import logging,traceback
 logger = logging.getLogger('django')
+
 
 @api_view(['POST'])
 @permission_classes(())
@@ -61,7 +57,6 @@ def login(request):
             }
             return Response(tmp_response, status=status.HTTP_200_OK)
         else:
-            logger.info(request.data)
             return Response({"message": "Wrong username or password"}, status=status.HTTP_401_UNAUTHORIZED)
     except Exception as e:
         return Response(status=status.HTTP_500_INTERNAL_SERVER_ERROR)

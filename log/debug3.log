@@ -1,0 +1,184 @@
+INFO Watching for file changes with StatReloader 2021-02-11 18:47:32,025
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 18:49:09,666
+INFO Watching for file changes with StatReloader 2021-02-11 18:49:10,571
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin"\r\n}' 2021-02-11 18:49:13,405
+INFO 1613056753.405225 2021-02-11 18:49:13,405
+INFO "POST /login/ HTTP/1.1" 200 64 2021-02-11 18:49:13,736
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin1"\r\n}' 2021-02-11 18:49:52,392
+INFO 1613056792.392315 2021-02-11 18:49:52,392
+WARNING Unauthorized: /login/ 2021-02-11 18:49:52,612
+WARNING "POST /login/ HTTP/1.1" 401 40 2021-02-11 18:49:52,613
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 18:51:12,778
+INFO Watching for file changes with StatReloader 2021-02-11 18:51:13,648
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin1"\r\n}' 2021-02-11 18:51:15,853
+INFO 1613056875.8537447 2021-02-11 18:51:15,853
+WARNING Unauthorized: /login/ 2021-02-11 18:51:16,062
+WARNING "POST /login/ HTTP/1.1" 401 40 2021-02-11 18:51:16,062
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 18:51:22,069
+INFO Watching for file changes with StatReloader 2021-02-11 18:51:22,886
+ERROR Internal Server Error: /login/ 2021-02-11 18:51:24,905
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    print(request.data)
+AttributeError: 'WSGIRequest' object has no attribute 'data'
+ERROR "POST /login/ HTTP/1.1" 500 66244 2021-02-11 18:51:24,906
+ERROR Internal Server Error: /login/ 2021-02-11 18:51:32,126
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    print(request.data)
+AttributeError: 'WSGIRequest' object has no attribute 'data'
+ERROR "POST /login/ HTTP/1.1" 500 66244 2021-02-11 18:51:32,127
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 18:52:12,584
+INFO Watching for file changes with StatReloader 2021-02-11 18:52:13,422
+ERROR Internal Server Error: /login/ 2021-02-11 18:52:17,908
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    if 'password' in request.body:
+TypeError: a bytes-like object is required, not 'str'
+ERROR "POST /login/ HTTP/1.1" 500 66186 2021-02-11 18:52:17,910
+ERROR Internal Server Error: /login/ 2021-02-11 18:52:31,939
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    if 'password' in request.body:
+TypeError: a bytes-like object is required, not 'str'
+ERROR "POST /login/ HTTP/1.1" 500 66186 2021-02-11 18:52:31,941
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:09:16,297
+INFO Watching for file changes with StatReloader 2021-02-11 19:09:17,314
+ERROR Internal Server Error: /login/ 2021-02-11 19:09:19,872
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    if 'password' in request.body:
+TypeError: a bytes-like object is required, not 'str'
+ERROR "POST /login/ HTTP/1.1" 500 66186 2021-02-11 19:09:19,874
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:09:40,938
+INFO Watching for file changes with StatReloader 2021-02-11 19:09:41,819
+ERROR Internal Server Error: /login/ 2021-02-11 19:09:42,899
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    if 'password' in request.body:
+TypeError: a bytes-like object is required, not 'str'
+ERROR "POST /login/ HTTP/1.1" 500 66198 2021-02-11 19:09:42,901
+ERROR Internal Server Error: /login/ 2021-02-11 19:09:45,885
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    if 'password' in request.body:
+TypeError: a bytes-like object is required, not 'str'
+ERROR "POST /login/ HTTP/1.1" 500 66198 2021-02-11 19:09:45,886
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:09:57,748
+INFO Watching for file changes with StatReloader 2021-02-11 19:09:58,563
+ERROR Internal Server Error: /login/ 2021-02-11 19:10:01,090
+Traceback (most recent call last):
+  File "C:\python 3.6\lib\site-packages\django\core\handlers\exception.py", line 47, in inner
+    response = get_response(request)
+  File "C:\python 3.6\lib\site-packages\django\utils\deprecation.py", line 113, in __call__
+    response = self.process_request(request)
+  File "E:\Django Projects\Corona_Project\myapp\midlog.py", line 30, in process_request
+    if "password" in request.body:
+TypeError: a bytes-like object is required, not 'str'
+ERROR "POST /login/ HTTP/1.1" 500 66198 2021-02-11 19:10:01,092
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:10:14,930
+INFO Watching for file changes with StatReloader 2021-02-11 19:10:15,721
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin1"\r\n}' 2021-02-11 19:10:18,724
+INFO 1613058018.7253132 2021-02-11 19:10:18,725
+INFO <Response status_code=401, "application/json"> 2021-02-11 19:10:18,942
+WARNING Unauthorized: /login/ 2021-02-11 19:10:18,942
+WARNING "POST /login/ HTTP/1.1" 401 40 2021-02-11 19:10:18,943
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:11:13,808
+INFO Watching for file changes with StatReloader 2021-02-11 19:11:14,611
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin1"\r\n}' 2021-02-11 19:11:19,899
+INFO 1613058079.8999674 2021-02-11 19:11:19,899
+INFO <Response status_code=401, "application/json"> 2021-02-11 19:11:20,128
+WARNING Unauthorized: /login/ 2021-02-11 19:11:20,129
+WARNING "POST /login/ HTTP/1.1" 401 40 2021-02-11 19:11:20,129
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin"\r\n}' 2021-02-11 19:12:23,106
+INFO 1613058143.106939 2021-02-11 19:12:23,106
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:12:23,350
+INFO "POST /login/ HTTP/1.1" 200 64 2021-02-11 19:12:23,351
+INFO E:\Django Projects\Corona_Project\Corona_Project\settings.py changed, reloading. 2021-02-11 19:14:09,735
+INFO Watching for file changes with StatReloader 2021-02-11 19:14:10,533
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:15:38,313
+INFO Watching for file changes with StatReloader 2021-02-11 19:15:39,184
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin"\r\n}' 2021-02-11 19:15:41,089
+INFO 1613058341.089119 2021-02-11 19:15:41,089
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:15:41,332
+INFO AnonymousUser 2021-02-11 19:15:41,332
+INFO "POST /login/ HTTP/1.1" 200 64 2021-02-11 19:15:41,333
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:15:54,176
+INFO Watching for file changes with StatReloader 2021-02-11 19:15:55,004
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin"\r\n}' 2021-02-11 19:15:58,162
+INFO 1613058358.1621838 2021-02-11 19:15:58,162
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:15:58,381
+INFO AnonymousUser 2021-02-11 19:15:58,381
+INFO "POST /login/ HTTP/1.1" 200 64 2021-02-11 19:15:58,382
+INFO E:\Django Projects\Corona_Project\myapp\midlog.py changed, reloading. 2021-02-11 19:16:07,757
+INFO Watching for file changes with StatReloader 2021-02-11 19:16:08,680
+INFO b'{\r\n    "username": "admin",\r\n    "password": "admin"\r\n}' 2021-02-11 19:16:12,354
+INFO 1613058372.355919 2021-02-11 19:16:12,355
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:16:12,608
+INFO AnonymousUser 2021-02-11 19:16:12,608
+INFO "POST /login/ HTTP/1.1" 200 64 2021-02-11 19:16:12,609
+INFO E:\Django Projects\Corona_Project\Corona_Project\settings.py changed, reloading. 2021-02-11 19:17:33,537
+INFO Watching for file changes with StatReloader 2021-02-11 19:17:34,410
+INFO E:\Django Projects\Corona_Project\Corona_Project\settings.py changed, reloading. 2021-02-11 19:18:31,489
+INFO Watching for file changes with StatReloader 2021-02-11 19:18:32,475
+INFO "OPTIONS /login/ HTTP/1.1" 200 0 2021-02-11 19:19:27,316
+INFO b'{"username":"admin","password":"admin"}' 2021-02-11 19:19:27,324
+INFO 1613058567.324798 2021-02-11 19:19:27,324
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:27,509
+INFO AnonymousUser 2021-02-11 19:19:27,509
+INFO "POST /login/ HTTP/1.1" 200 64 2021-02-11 19:19:27,510
+INFO "OPTIONS /get-user-info/ HTTP/1.1" 200 0 2021-02-11 19:19:27,721
+INFO 1613058567.7272615 2021-02-11 19:19:27,727
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:27,782
+INFO admin 2021-02-11 19:19:27,782
+INFO "GET /get-user-info/ HTTP/1.1" 200 46 2021-02-11 19:19:27,782
+INFO "OPTIONS /recent-reports/ HTTP/1.1" 200 0 2021-02-11 19:19:30,423
+INFO 1613058570.4305456 2021-02-11 19:19:30,430
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:30,573
+INFO admin 2021-02-11 19:19:30,573
+INFO "GET /recent-reports/ HTTP/1.1" 200 1873 2021-02-11 19:19:30,573
+INFO 1613058572.9326103 2021-02-11 19:19:32,932
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:33,026
+INFO admin 2021-02-11 19:19:33,026
+INFO "GET /recent-reports/ HTTP/1.1" 200 1873 2021-02-11 19:19:33,026
+INFO 1613058576.1867712 2021-02-11 19:19:36,186
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:36,284
+INFO admin 2021-02-11 19:19:36,284
+INFO "GET /recent-reports/ HTTP/1.1" 200 1873 2021-02-11 19:19:36,285
+INFO 1613058576.6895852 2021-02-11 19:19:36,689
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:36,780
+INFO admin 2021-02-11 19:19:36,780
+INFO "GET /recent-reports/ HTTP/1.1" 200 1873 2021-02-11 19:19:36,780
+INFO "OPTIONS /logout/ HTTP/1.1" 200 0 2021-02-11 19:19:40,640
+INFO 1613058580.6535683 2021-02-11 19:19:40,653
+INFO <Response status_code=200, "application/json"> 2021-02-11 19:19:40,697
+INFO AnonymousUser 2021-02-11 19:19:40,697
+INFO "GET /logout/ HTTP/1.1" 200 34 2021-02-11 19:19:40,698

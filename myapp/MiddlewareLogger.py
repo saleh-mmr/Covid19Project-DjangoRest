@@ -11,6 +11,7 @@ from django.utils.deprecation import MiddlewareMixin
 import socket
 import time
 import json
+logger = logging.getLogger('django')
 
 request_logger = logging.getLogger('django.request')
 
@@ -26,11 +27,10 @@ class RequestLogMiddleware(MiddlewareMixin):
         """Set Request Start Time to measure time taken to service request."""
         if request.method in ['POST', 'PUT', 'PATCH']:
             request.req_body = request.body
-            print('aaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+            logger.info(request.req_body)
         if str(request.get_full_path()).startswith('/'):
             request.start_time = time.time()
-            print(request.start_time)
-            print('bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb')
+            logger.info(request.start_time)
 
     def extract_log_info(self, request, response=None, exception=None):
         """Extract appropriate log info from requests/responses/exceptions."""
@@ -41,7 +41,7 @@ class RequestLogMiddleware(MiddlewareMixin):
             'request_path': request.get_full_path(),
             'run_time': time.time() - request.start_time,
         }
-        print('ccccccccccccccccccccccccccccc')
+        logger.info(log_data)
         if request.method in ['PUT', 'POST', 'PATCH']:
             log_data['request_body'] = json.loads(
                 str(request.req_body, 'utf-8'))
@@ -49,10 +49,6 @@ class RequestLogMiddleware(MiddlewareMixin):
                 if response['content-type'] == 'application/json':
                     response_body = response.content
                     log_data['response_body'] = response_body
-            print('ddddddddddddddddddddddddddddddd')
-
-        print('eeeeeeeeeeeeeeeeeeeeeeeeeee')
-
         return log_data
 
     def process_response(self, request, response):
@@ -62,12 +58,15 @@ class RequestLogMiddleware(MiddlewareMixin):
                 log_data = self.extract_log_info(request=request,
                                                  response=response)
                 request_logger.debug(msg='', extra=log_data)
+        logger.info(response)
+        logger.info(request.user)
         return response
 
     def process_exception(self, request, exception):
         """Log Exceptions."""
         try:
             raise exception
-        except Exception:
+        except Exception as e:
+            logger.info(e)
             request_logger.exception(msg="Unhandled Exception")
         return exception
