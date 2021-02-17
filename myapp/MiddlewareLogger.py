@@ -28,6 +28,7 @@ class RequestLogMiddleware(MiddlewareMixin):
         if request.method in ['POST', 'PUT', 'PATCH']:
             request.req_body = request.body
             logger.info(request.req_body)
+
         if str(request.get_full_path()).startswith('/'):
             request.start_time = time.time()
             logger.info(request.start_time)

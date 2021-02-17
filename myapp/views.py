@@ -47,7 +47,7 @@ def signup(request):
 def login(request):
     try:
         params = request.data
-        user = authenticate(username=params['username'], password=params['password'], )
+        user = authenticate(username=params['user'], password=params['pass'], )
         if user:
             token, _ = Token.objects.get_or_create(user=user)
             is_expired, token = token_expire_handler(token)
@@ -168,11 +168,11 @@ def new_report(request):
 @permission_classes([IsAuthenticated])
 def get_all_user_reports(request):
     try:
-        a = models.Patient.objects.filter(user_site=request.user)
+        current_user_patients = models.Patient.objects.filter(user_site=request.user)
         rsp = {}
-        if a:
+        if current_user_patients:
             s = 0
-            for i in a:
+            for i in current_user_patients:
                 b = models.Status.objects.filter(patient=i)
                 patient_status = 'ثبت نشده'
                 disease_title = 'ثبت نشده'
@@ -261,6 +261,7 @@ def edit_report(request, pk):
                     else:
                         models.Status.objects.create(patient=current_patient, disease_status=anfoolanza)
                         current_disease_system = anfoolanza
+
             current_patient.first_name = firstName
             current_patient.last_name = lastName
             current_patient.national_code = nationalCode
@@ -301,12 +302,11 @@ def edit_report(request, pk):
 @permission_classes([IsAuthenticated])
 def add_connection(request, pk):
     data = request.data
-    patientid = pk
     phonenumber = data['phoneNumber']
     email = data['email']
     try:
-        if models.Patient.objects.filter(id=patientid, user_site=request.user):
-            current_patient = models.Patient.objects.get(id=patientid, user_site=request.user)
+        if models.Patient.objects.filter(id=pk, user_site=request.user):
+            current_patient = models.Patient.objects.get(id=pk, user_site=request.user)
             models.Connections.objects.create(patient=current_patient, phone_number=phonenumber, email=email)
             last_disease = ''
             for i in models.Status.objects.filter(patient=current_patient):
