@@ -16,5 +16,4 @@ urlpatterns = [
     url(r'^patient-connections/(?P<pk>\d+)$', get_patient_connections, name='patientconnections'),
     url(r'^number-corona/', get_number_corona, name='numbercorona'),
     url(r'^corona_statistics/', get_corona_statistics, name='coronastatistics'),
-
 ]
